@@ -3,7 +3,7 @@ from tensorflow import keras
 import numpy as np
 import librosa
 import time
-
+import soundfile as sf
 #Baseline WGANGP model directly from the Keras documentation: https://keras.io/examples/generative/wgan_gp/
 #Original WaveGAN: https://github.com/chrisdonahue/wavegan
 
@@ -151,8 +151,11 @@ class WGANGP(keras.Model):
                 random_latent_vectors = tf.random.normal(shape=(1, self.latent_dim))
                 for i in range (n_classes):
                     generated_audio = self.generator([random_latent_vectors, np.array(i).reshape(-1,1)])
-                    librosa.output.write_wav(f'{checkpoints_path}/synth_audio/{batch}_batch_synth_class_{i}.wav', 
-                                             y = tf.squeeze(generated_audio).numpy(), sr = sampling_rate, norm=False)
+                    # librosa.output.write_wav(f'{checkpoints_path}/synth_audio/{batch}_batch_synth_class_{i}.wav', 
+                    #                          y = tf.squeeze(generated_audio).numpy(), sr = sampling_rate, norm=False)
+                    #Updating 
+                    sf.write(f'{checkpoints_path}/synth_audio/{batch}_batch_synth_class_{i}.wav', 
+                                             tf.squeeze(generated_audio).numpy(), sampling_rate)                    
                 print(f'Done.')
                 
             if batch % save_frequency == 0:
