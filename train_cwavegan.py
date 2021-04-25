@@ -2,7 +2,8 @@ import cwawegan_architecture
 import wgangp
 import utils
 from tensorflow.keras.optimizers import Adam
-
+import warnings
+warnings.filterwarnings('ignore')
 def train_model(sampling_rate = 22050,
                 n_batches = 10000,
                 batch_size = 128,
@@ -101,9 +102,9 @@ def train_model(sampling_rate = 22050,
 if __name__ == '__main__':
     train_model(sampling_rate = 22050,
                 n_batches = 30000,
-                batch_size = 128,
-                audio_path = 'audio/',
-                checkpoints_path = 'checkpoints/',
+                batch_size = 64,
+                audio_path = '/content/conditional_wavegan_knocking_sounds/All_subset/',
+                checkpoints_path = '/content/conditional_wavegan_knocking_sounds/checkpoints/',
                 architecture_size = 'large',
                 path_to_weights = 'model_weights.h5',
                 resume_training = False,
