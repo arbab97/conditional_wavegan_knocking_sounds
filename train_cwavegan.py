@@ -4,6 +4,8 @@ import utils
 from tensorflow.keras.optimizers import Adam
 import warnings
 warnings.filterwarnings('ignore')
+
+#change the parameters at the end, these are the default ones. 
 def train_model(sampling_rate = 22050,
                 n_batches = 10000,
                 batch_size = 128,
