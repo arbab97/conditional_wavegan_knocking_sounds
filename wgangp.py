@@ -150,7 +150,7 @@ class WGANGP(keras.Model):
                 print(f'Synthesising audio at batch {batch}. Path: {checkpoints_path}/synth_audio')
                 random_latent_vectors = tf.random.normal(shape=(1, self.latent_dim))
                 for i in range (n_classes):
-                    generated_audio = self.generator([random_latent_vectors, np.array(i).reshape(-1,1)])
+                    generated_audio = self.generator([random_latent_vectors, np.array(range(0,100)).reshape(-1,100)])
                     # librosa.output.write_wav(f'{checkpoints_path}/synth_audio/{batch}_batch_synth_class_{i}.wav', 
                     #                          y = tf.squeeze(generated_audio).numpy(), sr = sampling_rate, norm=False)
                     #Updating 

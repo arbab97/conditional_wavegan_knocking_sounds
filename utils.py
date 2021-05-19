@@ -3,7 +3,8 @@ import numpy as np
 import json
 import os
 from datetime import datetime
-
+import pandas as pd
+from sklearn.manifold import TSNE
 #get the number of classes from the number of folders in the audio dir
 def get_n_classes(audio_path):
     root, dirs, files = next(os.walk(audio_path))
@@ -33,6 +34,11 @@ def save_label_names(audio_path, save_folder):
 #create the dataset from the audio path folder
 def create_dataset(audio_path, sample_rate, architecture_size, labels_saving_path):
     
+    #Read the pickle file 
+
+    df_original=pd.read_pickle("/content/conditional_wavegan_knocking_sounds/df_backup")  #number of samples that you want       
+    df_original=df_original.sample(10)
+    
     if architecture_size == 'large':
         audio_size_samples = 65536
     elif architecture_size == 'medium':
@@ -44,15 +50,29 @@ def create_dataset(audio_path, sample_rate, architecture_size, labels_saving_pat
     save_label_names(audio_path, labels_saving_path)
     audio = []
     labels_names = []
-    for folder in next(os.walk(audio_path))[1]:
-        for wavfile in os.listdir(audio_path+folder):
-            audio.append(load_audio(audio_path = f'{audio_path}{folder}/{wavfile}', sr = sample_rate, audio_size_samples = audio_size_samples))
-            labels_names.append(folder)
+
+    for index, row in df_original.iterrows():
+        audio.append(load_audio(audio_path = row["full_file_name"], sr = sample_rate, audio_size_samples = audio_size_samples))
+        one_value=np.array(row["output"])[0].flatten()
+        pad_one_value = np.pad(one_value, (0, (128*768)- len(one_value) ), 'constant', 
+                 constant_values=(0))
+        labels_names.append(pad_one_value)
+        print(pad_one_value.shape)
+    # for folder in next(os.walk(audio_path))[1]:
+    #     for wavfile in os.listdir(audio_path+folder):
+    #         audio.append(load_audio(audio_path = f'{audio_path}{folder}/{wavfile}', sr = sample_rate, audio_size_samples = audio_size_samples))
+    #         labels_names.append(folder)
     audio_np = np.asarray(audio)
     audio_np = np.expand_dims(audio_np, axis = -1)
-    labels = np.unique(labels_names, return_inverse=True)[1]
-    labels_np = np.expand_dims(labels, axis = -1)
-    
+    # labels = np.unique(labels_names, return_inverse=True)[1]
+    # labels_np = np.expand_dims(labels, axis = -1)
+    print("-->", len(labels_names))
+    labels_names=np.array(labels_names)
+    #reducing the dimensions. 
+    print("-->", labels_names.shape)
+    labels_names = TSNE(n_components=100, method='exact').fit_transform(labels_names)
+    labels_np = np.expand_dims(labels_names, axis = -1)
+    print("-->", labels_np.shape)
     return audio_np, labels_np
 
 #create folder with current date (to avoid overriding the synthesised audio/model when resuming the training)

@@ -38,9 +38,9 @@ def generator(z_dim = 100,
         
     generator_filters = [1024, 512, 256, 128, 64]
     
-    label_input = Input(shape=(1,), dtype='int32', name='generator_label_input')
-    label_em = Embedding(n_classes, n_classes * 20, name = 'label_embedding')(label_input)
-    label_em = Dense(16, name = 'label_dense')(label_em)
+    label_input = Input(shape=(100,), dtype='int32', name='generator_label_input')  #96768 comes from Arabert embedding
+    # label_em = Embedding(n_classes, n_classes * 20, name = 'label_embedding')(label_input)
+    label_em = Dense(16, name = 'label_dense')(label_input)
     label_em = Reshape((16, 1), name = 'label_respahe')(label_em)
     
     generator_input = Input(shape=(z_dim,), name='generator_input')
@@ -155,9 +155,9 @@ def discriminator(architecture_size='small',
     elif architecture_size == 'small':
         audio_input_dim = 16384
         
-    label_input = Input(shape=(1,), dtype='int32', name='discriminator_label_input')
-    label_em = Embedding(n_classes, n_classes * 20)(label_input)
-    label_em = Dense(audio_input_dim)(label_em)
+    label_input = Input(shape=(100,), dtype='int32', name='discriminator_label_input')
+    # label_em = Embedding(n_classes, n_classes * 20)(label_input)
+    label_em = Dense(audio_input_dim)(label_input)
     label_em = Reshape((audio_input_dim, 1))(label_em)
     
     discriminator_input = Input(shape=(audio_input_dim,1), name='discriminator_input')
